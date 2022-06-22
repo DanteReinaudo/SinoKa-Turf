@@ -10,11 +10,11 @@ contract HorseOwnership is HorseRacing, ERC721 {
 
     mapping(uint256 => address) horseApprovals;
 
-    function balanceOf(address _owner) external view returns (uint256) {
+    function balanceOf(address _owner) external view override returns (uint256) {
         return ownerHorseCount[_owner];
     }
 
-    function ownerOf(uint256 _tokenId) external view returns (address) {
+    function ownerOf(uint256 _tokenId) external view override returns (address) {
         return horseToOwner[_tokenId];
     }
 
@@ -33,7 +33,7 @@ contract HorseOwnership is HorseRacing, ERC721 {
         address _from,
         address _to,
         uint256 _tokenId
-    ) external payable {
+    ) external payable override {
         require(
             horseToOwner[_tokenId] == msg.sender ||
                 horseApprovals[_tokenId] == msg.sender
@@ -44,6 +44,7 @@ contract HorseOwnership is HorseRacing, ERC721 {
     function approve(address _approved, uint256 _tokenId)
         external
         payable
+        override
         onlyOwnerOf(_tokenId)
     {
         horseApprovals[_tokenId] = _approved;
