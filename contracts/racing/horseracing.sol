@@ -5,7 +5,7 @@ import "./horsehelper.sol";
 
 contract HorseRacing is HorseHelper {
     uint256 raceBet = 0.01 ether;
-    uint256[7] currentRace;
+    uint256[4] currentRace;
     uint256 idx = 0;
     uint256 randNonce = 0;
 
@@ -49,4 +49,32 @@ contract HorseRacing is HorseHelper {
         // emitir evento de race para mostrarla en el front
         idx = 0;
     }
+
+
+   function mock_bet(uint256 _horseId) external payable onlyOwnerOf(_horseId) {
+        require(msg.value == raceBet);
+        require(idx < currentRace.length - 1);
+        currentRace[idx] = _horseId;
+        idx++;
+
+        if (idx == currentRace.length - 1) {
+            mock_race(idx);
+        }
+    }
+
+    function mock_race(uint256 winner) internal {
+        uint256 winnerId = currentRace[winner];
+        horses[winnerId].winCount++;
+        for (uint256 i = 0; i < currentRace.length; i++) {
+            horses[currentRace[i]].lossCount++;
+        }
+        horses[winnerId].lossCount--;
+
+        // transferir el premio al ganador (chequear)
+        payable(horseToOwner[winnerId]).transfer(raceBet * currentRace.length);
+
+        // emitir evento de race para mostrarla en el front
+        idx = 0;
+    }
+
 }

@@ -1,4 +1,4 @@
-
+/*
 const HorseFactory = artifacts.require("HorseFactory");
 const horseNames = ["Horse 1", "Horse 2"];
 contract("HorseFactory", (accounts) => {
@@ -27,3 +27,4 @@ contract("HorseFactory", (accounts) => {
     })
 
 })
+*/

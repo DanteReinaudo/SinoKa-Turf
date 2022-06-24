@@ -1,4 +1,4 @@
-
+/*
 const HorseCoin = artifacts.require("HorseCoin");
 const horseNames = ["Horse 1", "Horse 2"];
 contract("HorseCoin", (accounts) => {
@@ -68,3 +68,4 @@ contract("HorseCoin", (accounts) => {
      })
 
 })
+*/
