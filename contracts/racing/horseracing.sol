@@ -2,6 +2,7 @@
 pragma solidity >=0.7.0 <0.9.0;
 
 import "./horsehelper.sol";
+import "./horsecoin.sol";
 
 contract HorseRacing is HorseHelper {
     uint256 raceBet = 10;
@@ -10,6 +11,12 @@ contract HorseRacing is HorseHelper {
     uint256 idx = 0;
     uint256 randNonce = 0;
     uint256 totalBet = 0;
+    HorseCoin token = new HorseCoin(10000);
+    address contractOwner;
+
+    constructor() {
+        contractOwner = msg.sender;
+    }
 
     event Race(uint _betAmount, uint _numberOfParticipants, uint256[4] _participants, address _winner, uint _winnerHorseId);
 
@@ -27,26 +34,34 @@ contract HorseRacing is HorseHelper {
         raceBet = _bet;
     }
 
-    function bet(uint256 _horseId) external payable onlyOwnerOf(_horseId) {
-        require(msg.value == raceBet);
+    function bet(uint256 _horseId) external onlyOwnerOf(_horseId) {
+        //require(msg.value == raceBet);
+        require(token.balanceOf(msg.sender) >= raceBet);
         require(idx < maxHorses);
         currentRace[idx] = _horseId;
         idx++;
-        totalBet += msg.value;
+        token.transferFrom(msg.sender, contractOwner, raceBet);
     }
 
     function race() external onlyOwner {
+        require(msg.sender == contractOwner);
+        require(token.balanceOf(msg.sender) >= totalBet);
         require(idx == maxHorses);
+
         uint256 winnerId = currentRace[randMod(currentRace.length)];
         horses[winnerId].winCount++;
+
         for (uint256 i = 0; i < currentRace.length; i++) {
             horses[currentRace[i]].lossCount++;
         }
         horses[winnerId].lossCount--;
 
         // transferir el premio al ganador (chequear)
-        address payable payTo = payable(address(horseToOwner[winnerId]));
-        payTo.transfer(totalBet);
+        //address payable payTo = payable(address(horseToOwner[winnerId]));
+        //payTo.transfer(totalBet);
+
+        address payTo = horseToOwner[winnerId];
+        token.transfer(payTo, totalBet);
 
         //payable(horseToOwner[winnerId]).transfer(raceBet * currentRace.length);
 
@@ -82,6 +97,14 @@ contract HorseRacing is HorseHelper {
 
     function returnRaceBet() external view returns (uint256){
         return raceBet;
+    }
+
+    function returnBalanceOf(address tokenOwner) external view returns (uint256){
+        return token.balanceOf(tokenOwner);
+    }
+
+    function transferToken(address to, uint256 tokens) external returns (bool success){
+        return token.transfer(to, tokens);
     }
 
 }

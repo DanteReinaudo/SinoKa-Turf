@@ -7,7 +7,7 @@ contract("HorseRacing", (accounts) => {
         contractInstance = await HorseRacing.new({from: c});
     });
 
-    /*
+    
     it("should be able to show bet price", async () => {
         let raceBet = await contractInstance.returnRaceBet();
         assert.equal(raceBet,10);
@@ -69,6 +69,7 @@ contract("HorseRacing", (accounts) => {
         assert(false, "The contract did not throw.");
     })
     
+    /*
     it("cant start a race with insufficient horse", async () => { 
         try {
             let winner =  contractInstance.race({from: c});
@@ -90,7 +91,7 @@ contract("HorseRacing", (accounts) => {
         }
         assert(false, "The contract did not throw.");
     })
-*/
+
 
     it("obtain race winner", async () => { 
         const horse1 = await contractInstance.createRandomHorse(horseNames[0], {from: alice});
@@ -116,5 +117,5 @@ contract("HorseRacing", (accounts) => {
         assert.equal(winnerId,2);
     })
 
-
+*/
 })
