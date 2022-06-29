@@ -5,9 +5,6 @@ import "./ownable.sol";
 import "./safemath.sol";
 
 contract HorseFactory is Ownable {
-    using SafeMath for uint256;
-    using SafeMath32 for uint32;
-    using SafeMath16 for uint16;
 
     event NewHorse(uint256 horseId, string name, uint256 dna);
 
@@ -32,7 +29,7 @@ contract HorseFactory is Ownable {
         );
         uint256 id = horses.length - 1;
         horseToOwner[id] = msg.sender;
-        ownerHorseCount[msg.sender] = ownerHorseCount[msg.sender].add(1);
+        ownerHorseCount[msg.sender] = ownerHorseCount[msg.sender] + 1 ;
         emit NewHorse(id, _name, _dna);
     }
 
