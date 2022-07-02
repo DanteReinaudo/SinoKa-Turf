@@ -22,7 +22,7 @@ const Betting = () => {
   const { currentAccount, connectWallet, handleChange, formData, isLoading } = useContext(TransactionContext);
 
   const handleBet = (e) => {
-
+    console.log('bet')
   }
 
   return (

@@ -25,6 +25,7 @@ const Welcome = () => {
   const { currentAccount, connectWallet, handleChange, formData, isLoading } = useContext(TransactionContext);
 
   const handleSubmit = (e) => {
+    console.log('buy token. Amount: ', formData.amount);
     //comprar HorseCoin
   };
   
