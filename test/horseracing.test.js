@@ -130,12 +130,12 @@ contract("HorseRacing", (accounts) => {
         const horse4Id = horse4.logs[0].args.horseId.toNumber();
      
         
-        await contractInstance.bet(raceId, horse1Id, {from: alice});
-        await contractInstance.bet(raceId, horse2Id, {from: bob});
-        await contractInstance.bet(raceId, horse3Id, {from: carmen});
-        await contractInstance.bet(raceId, horse4Id, {from: diego});
+        await contractInstance.mock_bet(raceId, horse1Id, {from: alice});
+        await contractInstance.mock_bet(raceId, horse2Id, {from: bob});
+        await contractInstance.mock_bet(raceId, horse3Id, {from: carmen});
+        await contractInstance.mock_bet(raceId, horse4Id, {from: diego});
         
-        await contractInstance.mock_race(raceId, 2,{from:c});
+        await contractInstance.mock_simulateRace(raceId, 2,{from:c});
 
         let aliceBalance  = await contractInstance.returnBalanceOf(alice);
         assert.equal(aliceBalance, 90);
