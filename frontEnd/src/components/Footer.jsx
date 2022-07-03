@@ -1,9 +1,18 @@
 import React from "react";
 
 const Footer = () => (
-  <div className="sm:w-[90%] w-full flex justify-between items-center mt-3">
-    <p className="text-white text-left text-xs">La Ferrigneta. All rights reserved</p>
-  </div>
+  <footer style={{
+    position: 'fixed',
+    paddingBlock: 10,
+    bottom: 0,
+    width: 100 + '%',
+    height: 40,
+    background: 'lightgrey',
+    textAlign: 'center',
+    fontSize: '14px',
+  }}>
+    2022 La Ferrigneta. All rights reserved.
+  </footer>
 );
 
 export default Footer;

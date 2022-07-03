@@ -17,6 +17,7 @@
  * phrase from a file you've .gitignored so it doesn't accidentally become public.
  *
  */
+ var HDWalletProvider = require("truffle-hdwallet-provider");
 
 // const HDWalletProvider = require('@truffle/hdwallet-provider');
 //
@@ -69,11 +70,13 @@ module.exports = {
     // },
     //
     // Useful for private networks
-    // private: {
-    //   provider: () => new HDWalletProvider(mnemonic, `https://network.io`),
-    //   network_id: 2111,   // This network is yours, in the cloud.
-    //   production: true    // Treats this network as if it was a public net. (default: false)
-    // }
+    ropsten: {
+      provider: function() {
+        return new HDWalletProvider('e63e55d10a6145338905afec1cb408bb', "https://ropsten.infura.io/v3/62a26547e82949f0baf003bf5b20e627")
+      },
+      network_id: 3,
+      gas: 4000000      //make sure this gas allocation isn't over 4M, which is the max
+    }
   },
 
   // Set default mocha options here, use special reporters, etc.

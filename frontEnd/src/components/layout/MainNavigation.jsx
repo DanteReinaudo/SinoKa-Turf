@@ -52,12 +52,12 @@ export default function MainNavigation() {
       <AppBar position="static">
         <Toolbar>
           <div className={classes.items}>
-          <Button
+            <Button
               id="fade-button"
               aria-controls="fade-menu"
               aria-haspopup="true"
               color="inherit"
-              onClick={() => redirectHandler(setShowCarreras,'/')}
+              onClick={() => redirectHandler(setShowCarreras, '/')}
             >
               Home
             </Button>
@@ -67,28 +67,18 @@ export default function MainNavigation() {
               aria-controls="fade-menu"
               aria-haspopup="true"
               color="inherit"
-              onClick={() => redirectHandler(setShowCarreras,'/comprar-token')}
+              onClick={() => redirectHandler(setShowCarreras, '/carreras')}
             >
-              Tokens
+              Carreras
             </Button>
 
             <Button
-              id="fade-button"
+              id="fade-menu-recursos"
               aria-controls="fade-menu"
               aria-haspopup="true"
               color="inherit"
-              onClick={() => redirectHandler(setShowCarreras,'/carreras')}
-              >
-              Carreras
-            </Button>
-            
-            <Button
-                id="fade-menu-recursos"
-                aria-controls="fade-menu"
-                aria-haspopup="true"
-                color="inherit"  
-                onClick={() => redirectHandler(setShowCaballo,'/ver-caballo')}
-              >
+              onClick={() => redirectHandler(setShowCaballo, '/ver-caballo')}
+            >
               Caballos
             </Button>
 
