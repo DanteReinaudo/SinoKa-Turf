@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
-
+import { abi } from "../abi"
 export const TransactionContext = React.createContext();
 
 const { ethereum } = window;
 
+let contractAddress = "0x69F202076983a9E926475D27eD930c8D7A295854"
+
 const createEthereumContract = () => {
-  const provider = new ethers.getDefaultProvider('ropsten');
-  // const signer = provider.getSigner();
-  const horseRaceContract = new ethers.Contract(contractAddress, contractABI, signer); //hay que definir contractAddres y contractABI
-  console.log('contrato creado en '+provider)
-  if (!horseRaceContract) {
-    throw new Error("No se pudo crear el contrato");
-  }
-  return horseRaceContract;
+  const provider = new ethers.providers.InfuraProvider('ropsten', '62a26547e82949f0baf003bf5b20e627');
+  const senderWallet = ethers.Wallet.fromMnemonic('snap slender trap leopard web wasp typical hobby panther once tattoo just').connect(provider);
+  return new ethers.Contract(contractAddress, abi, senderWallet);
 };
 
 export const TransactionsProvider = ({ children }) => {

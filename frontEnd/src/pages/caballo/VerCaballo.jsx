@@ -17,8 +17,19 @@ const Input = ({ placeholder, name, type, value, handleChange }) => (
 const VerCaballo = () => {
   const { connectWallet, currentAccount, handleChange, formData, isLoading, horseRaceContract } = useContext(TransactionContext);
 
-  function getHorsesByOwner(owner) {
-    return horseRaceContract.methods.getHorsesByOwner(owner).call()
+  async function getHorsesByOwner(owner) {
+    const horses = await horseRaceContract.getHorsesByOwner(currentAccount)
+    return horses
+  }
+  async function createHorse(name) {
+    const horse = await horseRaceContract.createRandomHorse(horseName);
+    return horse
+  }
+
+  const handleSubmit = (e) => {
+    const { horseName } = formData;
+    console.log('Creando caballo');
+    createHorse(horseName);
   }
   
   var accountInterval = setInterval(function () {
@@ -66,13 +77,6 @@ const VerCaballo = () => {
     </div>
   );
 };
-
-
-const handleSubmit = (e) => {
-  const { horseName } = formData;
-  console.log('Creando caballo');
-  //createRandomHorse(horseName);
-}
 
 
 function displayHorses(ids) {

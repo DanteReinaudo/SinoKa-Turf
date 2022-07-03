@@ -17,14 +17,11 @@
  * phrase from a file you've .gitignored so it doesn't accidentally become public.
  *
  */
- var HDWalletProvider = require("truffle-hdwallet-provider");
+require("dotenv").config();
+var HDWalletProvider = require("truffle-hdwallet-provider");
+const deployerMnemonic = process.env.MNEMONIC;
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
-//
-// const fs = require('fs');
-// const mnemonic = fs.readFileSync(".secret").toString().trim();
-
-module.exports = {
+ module.exports = {
   /**
    * Networks define how you connect to your ethereum client and let you set the
    * defaults web3 uses to send transactions. If you don't specify one truffle
@@ -72,10 +69,12 @@ module.exports = {
     // Useful for private networks
     ropsten: {
       provider: function() {
-        return new HDWalletProvider('e63e55d10a6145338905afec1cb408bb', "https://ropsten.infura.io/v3/62a26547e82949f0baf003bf5b20e627")
+        return new HDWalletProvider(deployerMnemonic, "https://ropsten.infura.io/v3/62a26547e82949f0baf003bf5b20e627")
       },
       network_id: 3,
-      gas: 4000000      //make sure this gas allocation isn't over 4M, which is the max
+      from: "0xC4DBeE6249C54084246e3EAcFffF10ED6CE5F020",
+      gas: 8500000,      //make sure this gas allocation isn't over 4M, which is the max
+      gasPrice: 200000000000,  // 200 gwei (in wei) (default: 100 gwei)
     }
   },
 
