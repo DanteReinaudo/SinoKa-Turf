@@ -19,7 +19,7 @@ const App = () => {
         <Route path='/carrera'>
           <VerCarrera />
         </Route>
-        <Route path='/ver-caballo'>
+        <Route path='/caballo'>
           <VerCaballo />
         </Route>
         <Route path='*'>

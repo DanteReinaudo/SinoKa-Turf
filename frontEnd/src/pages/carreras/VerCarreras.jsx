@@ -47,6 +47,33 @@ const VerCarreras = () => {
   ];
 
   // cargar carreras:
+  async function getHorsesByOwner(owner) {
+    const provider = new ethers.providers.InfuraProvider('ropsten', '62a26547e82949f0baf003bf5b20e627');
+    const wallet = ethers.Wallet.fromMnemonic('snap slender trap leopard web wasp typical hobby panther once tattoo just').connect(provider);
+    let contractWithSigner = horseRaceContract.connect(wallet);
+  
+    // ver errores en browser y arreglar las interacciones con la testnet para cada operacion
+    await contractWithSigner.getHorsesByOwner(currentAccount)
+      .then((horses) => { displayHorses(horses) })
+      .catch( (error) => { console.log(error) })
+  }
+
+  async function createHorse(name) {
+    const horse = await horseRaceContract.createRandomHorse(horseName);
+    return horse
+  }
+
+  const handleSubmit = (e) => {
+    const { horseName } = formData;
+    console.log('Creando caballo');
+    createHorse(horseName);
+  }
+
+  var accountInterval = setInterval(async function () {
+    getHorsesByOwner(currentAccount);
+  }, 1000);
+  // cargar carreras
+
   useEffect(() => {
     fetch("https://modulo-proyectos-squad7.herokuapp.com/proyectos")
       .then((res) => res.json())

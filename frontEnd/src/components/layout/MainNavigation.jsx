@@ -77,7 +77,7 @@ export default function MainNavigation() {
               aria-controls="fade-menu"
               aria-haspopup="true"
               color="inherit"
-              onClick={() => redirectHandler(setShowCaballo, '/ver-caballo')}
+              onClick={() => redirectHandler(setShowCaballo, '/caballo')}
             >
               Caballos
             </Button>
