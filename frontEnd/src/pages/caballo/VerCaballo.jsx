@@ -54,7 +54,7 @@ const VerCaballo = () => {
 
   var accountInterval = setInterval(async function () {
     getHorsesByOwner(currentAccount);
-  }, 1000);
+  }, 100);
 
   function listHorses() {
     if (horses.length == 0) {
@@ -63,7 +63,7 @@ const VerCaballo = () => {
     console.log('horses: ' + horses + ' len: ' + horses.length)
     return horses.map((id) => (
       // console.log(id),
-      <li key={id.hex}> {id.hex}</li>
+      <li key={id.toString()}> id: {id.toString()}</li>
     ))
   }
   return (
