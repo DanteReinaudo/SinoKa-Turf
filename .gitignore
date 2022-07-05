@@ -1,3 +1,7 @@
 # Added Solidity compiler
 /contracts/SinoKoin/artifacts
 /contracts/artifacts
+/frontEnd/node_modules
+node_modules
+build
+/frontEnd/dist

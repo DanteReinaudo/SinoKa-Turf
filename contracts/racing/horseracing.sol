@@ -5,14 +5,29 @@ import "./horsehelper.sol";
 import "./horsecoin.sol";
 
 contract HorseRacing is HorseHelper {
-    uint256 raceBet = 10;
-    uint256 maxHorses = 4;
-    uint256[4] currentRace;
-    uint256 idx = 0;
+
     uint256 randNonce = 0;
-    uint256 totalBet = 0;
     HorseCoin token;
     address contractOwner;
+
+    struct Race {
+        uint raceBet;
+        uint256 idx;
+        uint[] bets;
+        bool completed;
+        uint256 maxHorses;
+    }
+
+    struct Bet {
+        uint256 amount;
+        address owner;
+        uint256 horseId;
+    }
+
+    mapping(uint => Race) races;
+    mapping(uint256 => Bet) betsToId;
+    uint numberOfRaces = 0;
+    uint256 numberOfBets = 0;
 
     // token price for ETH
     uint256 public tokensPerEth = 100;
@@ -24,8 +39,16 @@ contract HorseRacing is HorseHelper {
 
     // Event that log buy operation
     event BuyTokens(address buyer, uint256 amountOfETH, uint256 amountOfTokens);
+    event RaceCreated(uint256 raceId);
 
-    event Race(uint _betAmount, uint _numberOfParticipants, uint256[4] _participants, address _winner, uint _winnerHorseId);
+    function newRace(uint _betAmount, uint256 _maxAmountOfHorses) public returns (uint256 raceId) {
+        uint[] memory bets;
+        raceId = numberOfRaces;
+        races[raceId] = Race(_betAmount, 0, bets, false, _maxAmountOfHorses);
+
+        numberOfRaces++;
+        emit RaceCreated(raceId);
+    }
 
     function randMod(uint256 _modulus) internal returns (uint256) {
         randNonce = randNonce + 1;
@@ -37,87 +60,81 @@ contract HorseRacing is HorseHelper {
             ) % _modulus;
     }
 
-    function setBet(uint256 _bet) external onlyOwner {
-        raceBet = _bet;
+    function bet(uint256 raceId, uint256 _horseId) public payable onlyOwnerOf(_horseId) {
+        require(races[raceId].completed == false);
+        require(token.balanceOf(msg.sender) >= races[raceId].raceBet);
+
+        betsToId[numberOfBets] = Bet(races[raceId].raceBet, msg.sender, _horseId);
+        races[raceId].bets.push(numberOfBets);
+        races[raceId].idx++;
+        numberOfBets++;
+
+        token.bankTransfer(msg.sender, contractOwner, races[raceId].raceBet, contractOwner);
+        if(races[raceId].idx == races[raceId].maxHorses) {
+            simulateRace(raceId);
+        }
     }
 
-    function bet(uint256 _horseId) external onlyOwnerOf(_horseId) {
-        require(token.balanceOf(msg.sender) >= raceBet);
-        require(idx < maxHorses);
-        currentRace[idx] = _horseId;
-        idx++;
-        totalBet += raceBet;
-        token.bankTransfer(msg.sender, contractOwner, raceBet,contractOwner);
-    }
-
-    function race() external onlyOwner {
-        require(msg.sender == contractOwner);
-        require(token.balanceOf(msg.sender) >= totalBet);
-        require(idx == maxHorses);
-
-        uint256 winnerId = currentRace[randMod(currentRace.length)];
+    function simulateRace(uint256 raceId) private {
+        uint256 winnerId = betsToId[races[raceId].bets[randMod(races[raceId].bets.length)]].horseId;
         horses[winnerId].winCount++;
-
-        for (uint256 i = 0; i < currentRace.length; i++) {
-            horses[currentRace[i]].lossCount++;
+        
+        for (uint256 i = 0; i < races[raceId].maxHorses - 1; i++) {
+            horses[betsToId[races[raceId].bets[i]].horseId].lossCount++;
         }
         horses[winnerId].lossCount--;
 
         // transferir el premio al ganador (chequear)
-        //address payable payTo = payable(address(horseToOwner[winnerId]));
-        //payTo.transfer(totalBet);
 
         address payTo = horseToOwner[winnerId];
-        token.bankTransfer(contractOwner,payTo, raceBet,contractOwner);
-
-        //payable(horseToOwner[winnerId]).transfer(raceBet * currentRace.length);
-
-        // emitir evento de race para mostrarla en el front
-        emit Race(raceBet * currentRace.length, currentRace.length, currentRace, horseToOwner[winnerId], winnerId);
-        idx = 0;
-        totalBet = 0;
+        token.bankTransfer(contractOwner, payTo, races[raceId].raceBet * races[raceId].maxHorses, contractOwner);
+        races[raceId].completed = true;
     }
 
+    function mock_simulateRace(uint256 raceId, uint winner) public {
+        require(races[raceId].idx == races[raceId].maxHorses);
 
-    function mock_race(uint256 winner) external onlyOwner returns (uint256){
-        require(msg.sender == contractOwner);
-        require(token.balanceOf(contractOwner) >= totalBet);
-        require(idx == maxHorses);
-
-        uint256 winnerId = currentRace[winner];
+        uint256 winnerId = betsToId[races[raceId].bets[winner]].horseId;
         horses[winnerId].winCount++;
 
-        for (uint256 i = 0; i < currentRace.length; i++) {
-            horses[currentRace[i]].lossCount++;
+        for (uint256 i = 0; i < races[raceId].maxHorses - 1; i++) {
+            horses[betsToId[races[raceId].bets[i]].horseId].lossCount++;
         }
         horses[winnerId].lossCount--;
 
         // transferir el premio al ganador (chequear)
-        //address payable payTo = payable(address(horseToOwner[winnerId]));
-        //payTo.transfer(totalBet);
 
         address payTo = horseToOwner[winnerId];
-        token.bankTransfer(contractOwner,payTo, totalBet,contractOwner);
-
-        //payable(horseToOwner[winnerId]).transfer(raceBet * currentRace.length);
-
-        // emitir evento de race para mostrarla en el front
-        emit Race(raceBet * currentRace.length, currentRace.length, currentRace, horseToOwner[winnerId], winnerId);
-        idx = 0;
-        totalBet = 0;
+        token.bankTransfer(contractOwner, payTo, races[raceId].raceBet * races[raceId].idx, contractOwner);
+        races[raceId].completed = true;
     }
 
+    function mock_bet(uint256 raceId, uint256 _horseId) public payable onlyOwnerOf(_horseId) {
+        require(races[raceId].completed == false);
+        require(token.balanceOf(msg.sender) >= races[raceId].raceBet);
 
-    function returnTotalBet() external view returns (uint256){
-        return totalBet;
+        betsToId[numberOfBets] = Bet(races[raceId].raceBet, msg.sender, _horseId);
+        races[raceId].bets.push(numberOfBets);
+        races[raceId].idx++;
+        numberOfBets++;
+
+        token.bankTransfer(msg.sender, contractOwner, races[raceId].raceBet, contractOwner);
     }
 
-    function returnRaceBet() external view returns (uint256){
-        return raceBet;
+    function isRaceCompleted(uint256 raceId) external view returns(bool) {
+        return races[raceId].completed;
+    }   
+
+    function returnTotalBet(uint256 raceId) external view returns (uint256){
+        return (races[raceId].raceBet * races[raceId].idx);
     }
 
-    function returnRaceLength() external view returns (uint256){
-        return idx;
+    function returnRaceBet(uint256 raceId) external view returns (uint256){
+        return races[raceId].raceBet;
+    }
+
+    function returnRaceLength(uint256 raceId) external view returns (uint256){
+        return races[raceId].idx;
     }
 
     function transferToken(address from, address to, uint256 tokens) external returns (uint256){
