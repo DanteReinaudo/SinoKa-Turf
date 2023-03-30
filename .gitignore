@@ -5,3 +5,4 @@
 node_modules
 build
 /frontEnd/dist
+frontEnd/src/node_modules
